@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>marcus blog · combinators + flexbox</title>
+    <style>
+        :root {
+            --blue-lightest: #f2f9ff;
+            --blue-lighter: #e8f6ff;
+            --blue-light: #d0eaff;
+            --blue-medium: #4f9ec9;
+            --blue-dark: #1e3b4f;
+            --blue-darker: #113946;
+            --blue-accent: #22638b;
+            --text-color: #1e3b4f;
+            --bg-color: var(--blue-lighter);
+            --card-bg: #ffffff;
+            --border-light: #c8d9eb;
+            --sidebar-bg: #f5fcff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            line-height: 1.5;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-wrapper {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 28px;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--blue-dark);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            border-left: 6px solid var(--blue-medium);
+            padding-left: 1rem;
+            color: var(--blue-dark);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: var(--blue-medium);
+            margin-bottom: 0.3rem;
+        }
+
+        .site-title a {
+            text-decoration: none;
+            color: var(--blue-darker);
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .site-title a:hover {
+            color: var(--blue-accent);
+        }
+
+        .nav-menu > li {
+            list-style: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.2rem;
+            list-style: none;
+        }
+
+        .nav-menu li a {
+            display: inline-block;
+            padding: 0.6rem 1.3rem;
+            background: var(--blue-lightest);
+            border-radius: 40px;
+            color: var(--blue-darker);
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid transparent;
+        }
+
+        .nav-menu li a:hover {
+            background: var(--blue-lighter);
+            border-color: var(--blue-light);
+        }
+
+
+        .page-header {
+            background: var(--card-bg);
+            border-bottom: 2px solid var(--border-light);
+            padding: 1.2rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem 1.5rem;
+        }
+
+        .content-row {
+            display: flex;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .main-content {
+            flex: 2 1 500px;
+            padding: 2.2rem 2rem 2rem;
+            background-color: var(--card-bg);
+        }
+
+        .sidebar {
+            flex: 1 1 280px;
+            background-color: var(--sidebar-bg);
+            padding: 2rem 1.8rem;
+            border-left: 2px solid var(--border-light);
+        }
+
+        .post-card {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.8rem;
+            border-bottom: 2px dotted var(--blue-light);
+        }
+
+        .post-card:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .post-card h3 + p {
+            margin-top: 0.2rem;
+            font-style: italic;
+        }
+
+        .post-meta {
+            font-size: 0.95rem;
+            color: var(--blue-medium);
+            margin-bottom: 0.3rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-meta time {
+            background: var(--blue-light);
+            padding: 0.2rem 0.9rem;
+            border-radius: 30px;
+        }
+
+        .post-card p {
+            margin: 0.6rem 0 0.8rem;
+            color: var(--blue-dark);
+        }
+
+        .read-more {
+            font-weight: 600;
+            color: var(--blue-accent);
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+        }
+        .read-more:hover {
+            border-bottom-color: var(--blue-accent);
+        }
+
+        .sidebar section, .sidebar article {
+            margin-bottom: 2.3rem;
+        }
+
+        .sidebar h3 {
+            font-size: 1.3rem;
+            border-bottom: 3px solid var(--blue-light);
+            padding-bottom: 0.4rem;
+            margin-bottom: 1rem;
+            color: var(--blue-darker);
+        }
+
+        .about-text {
+            background: var(--card-bg);
+            padding: 1rem 1.3rem;
+            border-radius: 24px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.02);
+            font-size: 1rem;
+            border: 1px solid var(--blue-light);
+        }
+
+        /* student card styling integrated into sidebar */
+        .student-card {
+            max-width: 360px;
+            border: 1px solid var(--blue-dark);
+            padding: 12px;
+            font-family: Arial, sans-serif;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .student-card h2 {
+            margin-bottom: 0.5rem;
+            color: var(--blue-dark);
+            font-size: 1.5rem;
+        }
+        .student-card .details p {
+            margin: 0.3rem 0;
+            color: var(--blue-dark);
+            font-size: 0.95rem;
+        }
+        .student-card .details a {
+            color: var(--blue-accent);
+            text-decoration: none;
+        }
+        .student-card .details a:hover {
+            text-decoration: underline;
+        }
+
+        .category-list {
+            list-style: none;
+            background: var(--card-bg);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--blue-light);
+        }
+
+        .category-list li {
+            padding: 0.8rem 1.4rem;
+            border-bottom: 1px solid var(--blue-light);
+            font-weight: 500;
+        }
+
+        .category-list li:last-child {
+            border-bottom: none;
+        }
+
+        .category-list li span {
+            float: right;
+            background: var(--blue-light);
+            padding: 0.1rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+        }
+
+        .sidebar h3 ~ ul {
+            margin-top: 0.5rem;
+            border: 1px solid var(--blue-light);
+        }
+
+        .page-footer {
+            background-color: var(--blue-lightest);
+            border-top: 2px solid var(--border-light);
+            padding: 1.6rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            color: var(--blue-dark);
+        }
+
+        .footer-copy {
+            font-weight: 500;
+        }
+
+        .footer-contact {
+            display: flex;
+            gap: 2.2rem;
+        }
+
+        .footer-contact a {
+            color: var(--blue-accent);
+            text-decoration: none;
+            border-bottom: 1px dotted;
+        }
+        .footer-contact a:hover {
+            color: var(--blue-darker);
+        }
+
+        @media screen and (max-width: 700px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                padding: 1.2rem 1rem;
+            }
+
+            .nav-menu {
+                justify-content: center;
+            }
+
+            .content-row {
+                flex-direction: column;
+            }
+
+            .main-content {
+                padding: 1.8rem 1.2rem;
+            }
+
+            .sidebar {
+                border-left: none;
+                border-top: 3px solid var(--blue-light);
+                padding: 1.8rem 1.5rem;
+                background-color: var(--blue-lightest);
+            }
+
+            .page-footer {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 0.8rem;
+            }
+
+            .footer-contact {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 1.6rem;
+            }
+
+            h2 {
+                font-size: 1.6rem;
+            }
+        }
+
+        @media screen and (max-width: 380px) {
+            .nav-menu li a {
+                padding: 0.4rem 1rem;
+                font-size: 0.9rem;
+            }
+            .site-title a {
+                font-size: 1.7rem;
+            }
+        }
+
+        hr {
+            border: none;
+            border-top: 2px dotted var(--blue-light);
+            margin: 1.2rem 0;
+        }
+        a {
+            color: inherit;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <header class="page-header">
+            <div class="site-title">
+                <a href="#">📘 Marcus Salarza</a>
+            </div>
+            <nav aria-label="main nav">
+                <ul class="nav-menu">
+                    <li><a href="#">home</a></li>
+                    <li><a href="#">posts</a></li>
+                    <li><a href="#">about me</a></li>
+                    <li><a href="#">contact</a></li>
+                    <li><a href="Projects/schedule.html" target="_blank" rel="noopener">schedule</a></li>
+                    <li><a href="Projects/StudentCard.html" target="_blank" rel="noopener">student card</a></li>
+                    <li><a href="Projects/valentines.html" target="_blank" rel="noopener">valentine</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="content-row">
+            <main class="main-content">
+                <section aria-labelledby="recent">
+                    <h2 id="recent">📝 my recent thoughts</h2>
+
+                    <article class="post-card">
+                        <header>
+                            <h3>flexbox</h3>
+                            <p class="post-meta">
+                                <time datetime="2025-03-15">mar 15, 2025</time>
+                                <span> by marcus</span>
+                            </p>
+                        </header>
+                        <p>
+                            so we had to build a blog layout using only flexbox. at first i was struggling with 
+                            the sidebar and main area, but once i put <code>flex: 2 1 500px</code> on main and 
+                            <code>flex: 1 1 280px</code> on the sidebar it just worked. wrapping is the key fr.  
+                        </p>
+                        <a href="#" class="read-more">keep reading →</a>
+                    </article>
+
+                    <article class="post-card">
+                        <header>
+                            <h3>semantic html?? why does it matter</h3>
+                            <p class="post-meta">
+                                <time datetime="2025-03-10">mar 10, 2025</time>
+                                <span> by marcus</span>
+                            </p>
+                        </header>
+                        <p>
+                            at first i was like why not just divs. but now it kinda makes sense — screen readers 
+                            and stuff. plus it looks clean in the code. i put an aside with my uni info, you'll see it ➡️
+                        </p>
+                        <a href="#" class="read-more">keep reading →</a>
+                    </article>
+
+                    <article class="post-card">
+                        <header>
+                            <h3>media queries are lowkey fun</h3>
+                            <p class="post-meta">
+                                <time datetime="2025-03-04">mar 4, 2025</time>
+                                <span> by marcus</span>
+                            </p>
+                        </header>
+                        <p>
+                            made the whole layout stack on small screens (≤700px). sidebar goes under main, 
+                            header stacks vertically. at first my footer looked weird but i fixed it with 
+                            flex-direction column. responsive web feel like magic sometimes.
+                        </p>
+                        <a href="#" class="read-more">keep reading →</a>
+                    </article>
+                </section>
+
+                <section style="margin-top: 2rem;" aria-labelledby="faves">
+                    <h2 id="faves" style="font-size: 1.6rem;">faves</h2>
+                    <p>flexbox · html semantics · music i like</p>
+                </section>
+
+                <!-- schedule moved to separate page -->
+
+                <!-- valentine card moved to separate page -->
+            </main>
+
+            <aside class="sidebar">
+                <section aria-labelledby="about-head">
+                    <h3 id="about-head">🧑‍🎤 about me</h3>
+                    <div class="about-text">
+                        <p><strong>marcus salarza</strong> — 2nd year at xavier university. 
+                        majoring in IT but still figuring out css. 
+                        this blog is for my web design class.</p>
+                    </div>
+                </section>
+
+                <article aria-labelledby="cat-head">
+                    <h3 id="cat-head">📂 categories (according to me)</h3>
+                    <ul class="category-list">
+                        <li>flexbox <span>7</span></li>
+                        <li>school<span>5</span></li>
+                        <li>html homework <span>4</span></li>
+                        <li>random thoughts <span>6</span></li>
+                    </ul>
+                </article>
+
+                <section aria-labelledby="tip-head">
+                    <h3 id="tip-head">☕️  tip</h3>
+                    <div class="about-text" style="background: var(--blue-light);">
+                        <p>use <code>flex-wrap: wrap</code> + <code>flex: basis</code> and you don't 
+                        even need a grid. also, take breaks or you'll stare at code for 4 hrs like me.</p>
+                    </div>
+                </section>
+            </aside>
+        </div>
+
+        <footer class="page-footer">
+            <div class="footer-copy">
+               hi test
+            </div>
+            <div class="footer-contact">
+                <span>📧 <a href="#">200910051@my.xu.edu.ph</a></span>
+                <span>📸 <a href="#">@da</a></span>
+                <span>🐦 <a href="#">@asd</a></span>
+            </div>
+        </footer>
+    </div>
+
+
+</html>
+
+

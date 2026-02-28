@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BE MINE</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --pink: #fff0f3;
+            --main-red: #ff4d6d;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--pink);
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            transition: background 0.4s ease;
+            overflow: hidden;
+        }
+
+        .horror-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-emoji {
+            position: absolute;
+            font-size: 5rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 15px red);
+        }
+
+        .blood-drip {
+            position: fixed;
+            top: -100px;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #8a0303 10%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.8s, top 0.8s;
+            z-index: 5;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 400px;
+            z-index: 10;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .shattered {
+            background: #b0b0b0 !important;
+            border: 3px solid #8a0303;
+            clip-path: polygon(10% 0, 90% 0, 100% 10%, 100% 70%, 80% 85%, 100% 100%, 20% 90%, 0% 100%, 0% 10%, 20% 25%);
+            animation: card-shake 0.2s infinite;
+        }
+
+        @keyframes card-shake {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(1deg); }
+            100% { transform: rotate(-1deg); }
+        }
+
+        #main-icon { 
+            font-size: 5rem; 
+            display: block; 
+            margin-bottom: 10px; 
+            transition: 0.3s;
+        }
+
+        .bloody-heart {
+            filter: brightness(0) drop-shadow(0 0 20px #ff0000);
+            animation: heart-thump 0.5s infinite alternate;
+        }
+
+        @keyframes heart-thump { from { transform: scale(1); } to { transform: scale(1.2); } }
+
+        .shaking {
+            display: inline-block;
+            animation: violent-shake 0.1s infinite;
+        }
+
+        @keyframes violent-shake {
+            0% { transform: translate(3px, 3px); }
+            50% { transform: translate(-4px, -2px); }
+            100% { transform: translate(2px, 4px); }
+        }
+
+        h1 { color: var(--main-red); font-size: 1.8rem; transition: 0.3s; }
+
+        .btn-group {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        #yesBtn { background-color: var(--main-red); color: white; z-index: 50; }
+        #noBtn { background-color: #000; color: white; z-index: 10000; }
+        .glow-no { box-shadow: 0 0 25px #ff0000, 0 0 50px #ff0000; border: 2px solid white; }
+    </style>
+</head>
+<body id="body">
+
+    <div class="blood-drip" id="blood"></div>
+
+    <div class="horror-overlay">
+        <span class="floating-emoji" id="e1" style="top: 10%; left: 10%;">🔪</span>
+        <span class="floating-emoji" id="e2" style="top: 10%; right: 10%;">🔪</span>
+        <span class="floating-emoji" id="e3" style="bottom: 15%; left: 10%;">🩸</span>
+        <span class="floating-emoji" id="e4" style="bottom: 15%; right: 10%;">👁️</span>
+    </div>
+
+    <div class="container" id="card">
+        <span id="main-icon">💝</span>
+        <h1 id="headline">Will you be my Valentine?</h1>
+        
+        <div class="btn-group">
+            <button id="yesBtn" onclick="celebrate()">Yes</button>
+            <button id="noBtn" onclick="decline()">No</button>
+        </div>
+    </div>
+
+    <script>
+        let noCount = 0;
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const headline = document.getElementById('headline');
+        const icon = document.getElementById('main-icon');
+        const body = document.body;
+        const blood = document.getElementById('blood');
+        const card = document.getElementById('card');
+
+        function decline() {
+            noCount++;
+            if (noCount === 1) { document.body.appendChild(noBtn); }
+            noBtn.style.position = 'fixed';
+            const x = Math.random() * (window.innerWidth - 150);
+            const y = Math.random() > 0.5 ? (Math.random() * 150) : (window.innerHeight - 150);
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+
+            if (noCount === 1) {
+                headline.innerText = "Are you sure?";
+            } 
+            else if (noCount === 2) {
+                headline.innerText = "DON'T DO THAT.";
+                headline.classList.add('shaking');
+                headline.style.color = "#8a0303";
+                noBtn.classList.add('glow-no');
+                icon.classList.add('bloody-heart');
+                card.classList.add('shattered');
+                document.getElementById('e1').style.opacity = "1";
+                document.getElementById('e2').style.opacity = "1";
+                body.style.backgroundColor = "#2b0000";
+                yesBtn.style.transform = "scale(1.8)";
+            } 
+            else if (noCount >= 3) {
+                noBtn.style.display = 'none';
+                body.style.backgroundColor = "black";
+                blood.style.opacity = "1";
+                blood.style.top = "0";
+                document.getElementById('e3').style.opacity = "1";
+                document.getElementById('e4').style.opacity = "1";
+                headline.innerText = "ACCEPT IT";
+                headline.style.color = "red";
+                headline.style.fontSize = "4rem";
+                headline.classList.add('shaking');
+                yesBtn.style.transform = "scale(5)";
+            }
+        }
+
+        function celebrate() {
+            body.style.backgroundColor = "#fff0f3";
+            card.classList.remove('shattered');
+            card.style.background = "white";
+            headline.classList.remove('shaking');
+            headline.innerText = "I knew you'd say yes! 🥰";
+            headline.style.color = "#ff4d6d";
+            headline.style.fontSize = "1.8rem";
+            icon.classList.remove('bloody-heart');
+            icon.innerText = "💖";
+            icon.style.opacity = "1";
+            icon.style.filter = "none";
+            noBtn.classList.remove('glow-no');
+            blood.style.opacity = "0";
+            document.querySelectorAll('.floating-emoji').forEach(e => e.style.opacity = "0");
+            noBtn.style.display = 'none';
+            yesBtn.style.display = 'none';
+
+            confetti({
+                particleCount: 200,
+                spread: 100,
+                colors: ['#ff4d6d', '#ffffff']
+            });
+        }
+
+        /* REFLECTION:
+        1. What AI tool did I use?
+        I used Gemini, a large language model from Google, to act as a collaborative coding partner.
+
+        2. How did it help me?
+        It provided the foundational HTML/CSS/JavaScript structure and quickly executed complex logic for the button teleportation and horror-themed visual transitions.
+
+        3. What did I modify or improve?
+        I directed the AI to pivot from a standard Valentine card to a psychological horror theme, specifically requesting "decay" effects, blood visuals, and a forced "Yes" choice.
+
+        4. What did I learn from this activity?
+        I learned how to use CSS clip-path and JavaScript DOM manipulation to dynamically change a webpage's atmosphere based on user interaction.
+        */
+    </script>
+</body>
+</html>
+
+
